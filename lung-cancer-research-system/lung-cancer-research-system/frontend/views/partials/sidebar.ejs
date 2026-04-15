@@ -1,0 +1,58 @@
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-brand">
+    <div class="brand-icon">
+      <i class="fas fa-lungs"></i>
+    </div>
+    <div class="brand-text">
+      <span class="brand-title">LungAI</span>
+      <span class="brand-sub">Research System</span>
+    </div>
+  </div>
+
+  <div class="sidebar-user">
+    <div class="user-avatar"><%= user.name.charAt(0).toUpperCase() %></div>
+    <div class="user-info">
+      <span class="user-name"><%= user.name %></span>
+      <span class="user-role"><%= user.role || 'Researcher' %></span>
+    </div>
+  </div>
+
+  <div class="sidebar-section-label">Research Pipeline</div>
+  <ul class="sidebar-nav">
+    <li class="<%= active === 'overview' ? 'active' : '' %>">
+      <a href="/dashboard"><i class="fas fa-th-large"></i><span>Overview</span></a>
+    </li>
+    <li class="<%= active === 'upload' ? 'active' : '' %>">
+      <a href="/dashboard/upload"><i class="fas fa-cloud-upload-alt"></i><span>Dataset Upload</span></a>
+    </li>
+    <li class="<%= active === 'preprocess' ? 'active' : '' %>">
+      <a href="/dashboard/preprocess"><i class="fas fa-filter"></i><span>Preprocessing</span></a>
+    </li>
+    <li class="<%= active === 'ctgan' ? 'active' : '' %>">
+      <a href="/dashboard/ctgan"><i class="fas fa-robot"></i><span>CTGAN Generation</span></a>
+    </li>
+    <li class="<%= active === 'train' ? 'active' : '' %>">
+      <a href="/dashboard/train"><i class="fas fa-brain"></i><span>Model Training</span></a>
+    </li>
+    <li class="<%= active === 'evaluate' ? 'active' : '' %>">
+      <a href="/dashboard/evaluate"><i class="fas fa-chart-bar"></i><span>Evaluation</span></a>
+    </li>
+  </ul>
+
+  <div class="sidebar-section-label">Clinical Use</div>
+  <ul class="sidebar-nav">
+    <li class="<%= active === 'predict' ? 'active' : '' %>">
+      <a href="/dashboard/predict"><i class="fas fa-stethoscope"></i><span>Prediction</span></a>
+    </li>
+    <li class="<%= active === 'visualize' ? 'active' : '' %>">
+      <a href="/dashboard/visualize"><i class="fas fa-chart-line"></i><span>Visualization</span></a>
+    </li>
+    <li class="<%= active === 'history' ? 'active' : '' %>">
+      <a href="/dashboard/history"><i class="fas fa-history"></i><span>History</span></a>
+    </li>
+  </ul>
+
+  <div class="sidebar-footer">
+    <a href="/logout" class="logout-btn"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+  </div>
+</nav>

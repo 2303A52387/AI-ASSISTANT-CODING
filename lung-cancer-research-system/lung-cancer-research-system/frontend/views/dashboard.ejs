@@ -1,0 +1,150 @@
+<%- include('partials/header') %>
+<div class="app-layout">
+  <%- include('partials/sidebar') %>
+  <main class="main-content">
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Research Dashboard</h1>
+        <p class="page-sub">Welcome back, <strong><%= user.name %></strong> · IEEE Access 2025 Implementation</p>
+      </div>
+      <div class="header-actions">
+        <span class="badge-live"><i class="fas fa-circle"></i> System Active</span>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="kpi-grid">
+      <div class="kpi-card kpi-accent">
+        <div class="kpi-icon"><i class="fas fa-bullseye"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">98.93%</span>
+          <span class="kpi-label">RF+CTGAN Accuracy</span>
+        </div>
+        <div class="kpi-badge">Best</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon"><i class="fas fa-crosshairs"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">99%</span>
+          <span class="kpi-label">Precision & F1</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon"><i class="fas fa-layer-group"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">10</span>
+          <span class="kpi-label">ML Classifiers</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon"><i class="fas fa-database"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">309</span>
+          <span class="kpi-label">Dataset Instances</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon"><i class="fas fa-sync-alt"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">5-Fold</span>
+          <span class="kpi-label">Cross Validation</span>
+        </div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-icon"><i class="fas fa-robot"></i></div>
+        <div class="kpi-info">
+          <span class="kpi-val">CTGAN</span>
+          <span class="kpi-label">Data Augmentation</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Research Pipeline -->
+    <div class="section-card mt-4">
+      <div class="section-head"><h3>Research Pipeline</h3><span class="badge bg-success">IEEE Validated</span></div>
+      <div class="pipeline">
+        <% const steps = [
+          { icon:'fa-database', label:'1. Dataset', sub:'309 instances, 16 features', color:'blue', href:'/dashboard/upload' },
+          { icon:'fa-filter', label:'2. Preprocess', sub:'Normalize & clean data', color:'purple', href:'/dashboard/preprocess' },
+          { icon:'fa-robot', label:'3. CTGAN', sub:'Synthetic data generation', color:'teal', href:'/dashboard/ctgan' },
+          { icon:'fa-brain', label:'4. Train', sub:'Random Forest + 9 models', color:'orange', href:'/dashboard/train' },
+          { icon:'fa-chart-bar', label:'5. Evaluate', sub:'Accuracy, F1, ROC-AUC', color:'red', href:'/dashboard/evaluate' },
+          { icon:'fa-stethoscope', label:'6. Predict', sub:'Patient-level predictions', color:'green', href:'/dashboard/predict' }
+        ]; %>
+        <% steps.forEach((step, i) => { %>
+          <a href="<%= step.href %>" class="pipeline-step">
+            <div class="step-icon step-<%= step.color %>"><i class="fas <%= step.icon %>"></i></div>
+            <div class="step-info">
+              <span class="step-label"><%= step.label %></span>
+              <span class="step-sub"><%= step.sub %></span>
+            </div>
+          </a>
+          <% if (i < steps.length-1) { %><div class="pipeline-arrow"><i class="fas fa-chevron-right"></i></div><% } %>
+        <% }); %>
+      </div>
+    </div>
+
+    <!-- Two column: model results + paper info -->
+    <div class="row mt-4">
+      <div class="col-lg-7">
+        <div class="section-card">
+          <div class="section-head"><h3>Model Performance Summary</h3><small>CTGAN Augmentation Results</small></div>
+          <div class="model-table-wrap">
+            <table class="model-table">
+              <thead><tr><th>Classifier</th><th>Accuracy</th><th>Precision</th><th>Recall</th><th>F1</th></tr></thead>
+              <tbody>
+                <tr class="best-row"><td><i class="fas fa-trophy"></i> Random Forest</td><td><span class="acc-badge best">98.93%</span></td><td>99%</td><td>99%</td><td>99%</td></tr>
+                <tr><td>XGBoost</td><td><span class="acc-badge good">97.87%</span></td><td>98%</td><td>98%</td><td>98%</td></tr>
+                <tr><td>Extra Trees</td><td><span class="acc-badge good">97.87%</span></td><td>98%</td><td>98%</td><td>98%</td></tr>
+                <tr><td>Logistic Reg.</td><td><span class="acc-badge good">97.87%</span></td><td>98%</td><td>98%</td><td>98%</td></tr>
+                <tr><td>Decision Tree</td><td><span class="acc-badge good">97.87%</span></td><td>98%</td><td>98%</td><td>98%</td></tr>
+                <tr><td>Gradient Boost</td><td><span class="acc-badge good">97.87%</span></td><td>98%</td><td>98%</td><td>98%</td></tr>
+                <tr><td>K-Nearest Nbr</td><td><span class="acc-badge ok">95.74%</span></td><td>96%</td><td>96%</td><td>96%</td></tr>
+                <tr><td>Naive Bayes</td><td><span class="acc-badge ok">94.68%</span></td><td>95%</td><td>95%</td><td>95%</td></tr>
+                <tr><td>SVM</td><td><span class="acc-badge low">69.14%</span></td><td>81%</td><td>69%</td><td>67%</td></tr>
+                <tr><td>SGD Classifier</td><td><span class="acc-badge low">64.89%</span></td><td>77%</td><td>65%</td><td>62%</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="section-card h-100">
+          <div class="section-head"><h3>Paper Reference</h3></div>
+          <div class="paper-card">
+            <div class="paper-badge">IEEE Access · Vol. 13 · 2025</div>
+            <h4>Early Detection of Lung Cancer Using Predictive Modeling Incorporating CTGAN Features and Tree-Based Learning</h4>
+            <p class="paper-author"><i class="fas fa-user-graduate"></i> Abdulrahman Alzahrani</p>
+            <p class="paper-institution"><i class="fas fa-university"></i> University of Hafr Al Batin, Saudi Arabia</p>
+            <div class="paper-doi"><i class="fas fa-link"></i> DOI: 10.1109/ACCESS.2025.3543215</div>
+            <div class="paper-highlights">
+              <div class="highlight"><strong>Dataset:</strong> Kaggle · 309 instances · 16 attributes</div>
+              <div class="highlight"><strong>Best Model:</strong> RF + CTGAN · 98.93% Accuracy</div>
+              <div class="highlight"><strong>Validation:</strong> 5-Fold Cross-Validation · AUC = 0.999</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick actions -->
+    <div class="row mt-4">
+      <div class="col-12">
+        <div class="section-card">
+          <div class="section-head"><h3>Quick Actions</h3></div>
+          <div class="quick-actions">
+            <a href="/dashboard/upload" class="qa-btn"><i class="fas fa-cloud-upload-alt"></i> Upload Dataset</a>
+            <a href="/dashboard/ctgan" class="qa-btn"><i class="fas fa-robot"></i> Generate CTGAN Data</a>
+            <a href="/dashboard/train" class="qa-btn"><i class="fas fa-brain"></i> Train Models</a>
+            <a href="/dashboard/predict" class="qa-btn qa-primary"><i class="fas fa-stethoscope"></i> Run Prediction</a>
+            <a href="/dashboard/visualize" class="qa-btn"><i class="fas fa-chart-line"></i> View Charts</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/js/dashboard.js"></script>
+</body></html>

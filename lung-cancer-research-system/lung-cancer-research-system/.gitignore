@@ -1,0 +1,11 @@
+node_modules/
+backend/uploads/*.csv
+backend/uploads/*.xlsx
+.env
+*.pyc
+__pycache__/
+.DS_Store
+ml-service/venv/
+ml-service/*.pkl
+ml-service/*.joblib
+*.log

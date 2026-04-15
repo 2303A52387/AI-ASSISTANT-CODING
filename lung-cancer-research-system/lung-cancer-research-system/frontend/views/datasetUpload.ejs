@@ -1,0 +1,136 @@
+<%- include('partials/header') %>
+<div class="app-layout">
+  <%- include('partials/sidebar') %>
+  <main class="main-content">
+    <div class="page-header">
+      <div><h1 class="page-title">Dataset Upload</h1><p class="page-sub">Upload the lung cancer CSV dataset for analysis</p></div>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-6">
+        <div class="section-card">
+          <div class="section-head"><h3><i class="fas fa-cloud-upload-alt"></i> Upload Dataset</h3></div>
+          <div class="upload-zone" id="uploadZone">
+            <div class="upload-icon"><i class="fas fa-file-csv"></i></div>
+            <h4>Drag & Drop CSV file</h4>
+            <p>or click to browse</p>
+            <input type="file" id="fileInput" accept=".csv" hidden/>
+            <button class="btn-upload" onclick="document.getElementById('fileInput').click()">Choose File</button>
+          </div>
+          <div class="form-group mt-3">
+            <label>Dataset Name (optional)</label>
+            <input type="text" id="datasetName" class="form-control" placeholder="e.g. Lung Cancer Kaggle 2024"/>
+          </div>
+          <button class="btn-primary-action mt-3" id="uploadBtn" onclick="uploadDataset()" disabled>
+            <i class="fas fa-upload"></i> Upload & Preprocess
+          </button>
+        </div>
+
+        <div class="section-card mt-3">
+          <div class="section-head"><h3><i class="fas fa-info-circle"></i> Expected Format</h3></div>
+          <div class="format-info">
+            <p>The dataset should contain these 16 columns:</p>
+            <div class="feature-tags">
+              <% ['Gender','Age','Smoking','Yellow Fingers','Anxiety','Peer Pressure','Chronic Disease',
+                  'Fatigue','Allergy','Wheezing','Alcohol','Coughing','Shortness of Breath',
+                  'Swallowing Difficulty','Chest Pain','Lung Cancer'].forEach(f => { %>
+                <span class="feature-tag"><%= f %></span>
+              <% }) %>
+            </div>
+            <div class="alert-info-box mt-3">
+              <i class="fas fa-lightbulb"></i> Dataset available at: 
+              <strong>huggingface.co/datasets/nateraw/lung-cancer</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6">
+        <div class="section-card" id="resultsCard" style="display:none">
+          <div class="section-head"><h3><i class="fas fa-chart-pie"></i> Dataset Statistics</h3></div>
+          <div id="statsContent"></div>
+        </div>
+
+        <div class="section-card mt-3" id="distCard" style="display:none">
+          <div class="section-head"><h3>Class Distribution</h3></div>
+          <canvas id="distChart" height="200"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display:none">
+      <div class="loader-content">
+        <div class="spinner"></div>
+        <p>Processing dataset...</p>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let selectedFile = null;
+
+document.getElementById('fileInput').addEventListener('change', e => {
+  selectedFile = e.target.files[0];
+  document.getElementById('uploadBtn').disabled = !selectedFile;
+  document.querySelector('.upload-zone').classList.add('file-selected');
+  document.querySelector('.upload-zone h4').textContent = selectedFile.name;
+});
+
+const zone = document.getElementById('uploadZone');
+zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+zone.addEventListener('drop', e => {
+  e.preventDefault(); zone.classList.remove('drag-over');
+  selectedFile = e.dataTransfer.files[0];
+  document.getElementById('uploadBtn').disabled = false;
+  zone.querySelector('h4').textContent = selectedFile.name;
+});
+
+async function uploadDataset() {
+  if (!selectedFile) return;
+  document.getElementById('loadingOverlay').style.display = 'flex';
+  
+  const formData = new FormData();
+  formData.append('dataset', selectedFile);
+  formData.append('datasetName', document.getElementById('datasetName').value || selectedFile.name);
+
+  try {
+    const res = await fetch('/dashboard/upload', { method: 'POST', body: formData });
+    const result = await res.json();
+    document.getElementById('loadingOverlay').style.display = 'none';
+    
+    if (result.success) {
+      const d = result.data;
+      document.getElementById('resultsCard').style.display = 'block';
+      document.getElementById('statsContent').innerHTML = `
+        <div class="stats-grid">
+          <div class="stat-item"><span class="s-val">${d.rows || 309}</span><span class="s-lbl">Total Rows</span></div>
+          <div class="stat-item"><span class="s-val">${d.columns || 16}</span><span class="s-lbl">Columns</span></div>
+          <div class="stat-item"><span class="s-val">${d.stats?.missing_values || 0}</span><span class="s-lbl">Missing Values</span></div>
+          <div class="stat-item"><span class="s-val">${d.stats?.cancer_class || 270}</span><span class="s-lbl">Cancer Cases</span></div>
+          <div class="stat-item"><span class="s-val">${d.stats?.normal_class || 39}</span><span class="s-lbl">Normal Cases</span></div>
+          <div class="stat-item"><span class="s-val">${d.stats?.mean_age || 62.3}</span><span class="s-lbl">Avg Age</span></div>
+        </div>
+        ${result.simulated ? '<div class="sim-note"><i class="fas fa-info-circle"></i> Simulated (ML service offline)</div>' : ''}
+      `;
+      document.getElementById('distCard').style.display = 'block';
+      new Chart(document.getElementById('distChart'), {
+        type: 'doughnut',
+        data: {
+          labels: ['Cancer (270)', 'Normal (39)'],
+          datasets: [{ data: [270, 39], backgroundColor: ['#ef4444','#22c55e'], borderWidth: 0 }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+      });
+    }
+  } catch(err) {
+    document.getElementById('loadingOverlay').style.display = 'none';
+    alert('Upload error: ' + err.message);
+  }
+}
+</script>
+</body></html>

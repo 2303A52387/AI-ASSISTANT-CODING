@@ -1,0 +1,64 @@
+<%- include('partials/header') %>
+
+<div class="auth-page">
+  <div class="auth-left">
+    <div class="auth-left-content">
+      <div class="auth-logo">
+        <i class="fas fa-lungs"></i>
+      </div>
+      <h1>LungAI Research System</h1>
+      <p>Early Detection of Lung Cancer Using Predictive Modeling with CTGAN Features & Tree-Based Learning</p>
+      <div class="auth-stats">
+        <div class="auth-stat"><span class="stat-val">98.93%</span><span class="stat-label">RF+CTGAN Accuracy</span></div>
+        <div class="auth-stat"><span class="stat-val">99%</span><span class="stat-label">Precision & Recall</span></div>
+        <div class="auth-stat"><span class="stat-val">10</span><span class="stat-label">ML Classifiers</span></div>
+      </div>
+      <div class="paper-ref">
+        <i class="fas fa-file-alt"></i>
+        <span>IEEE Access, Vol. 13, 2025 · DOI: 10.1109/ACCESS.2025.3543215</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="auth-right">
+    <div class="auth-card">
+      <h2>Welcome Back</h2>
+      <p class="auth-subtitle">Sign in to access the research dashboard</p>
+
+      <% if (error_msg && error_msg.length > 0) { %>
+        <div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> <%= error_msg %></div>
+      <% } %>
+      <% if (success_msg && success_msg.length > 0) { %>
+        <div class="alert alert-success"><i class="fas fa-check-circle"></i> <%= success_msg %></div>
+      <% } %>
+
+      <form action="/login" method="POST">
+        <div class="form-group">
+          <label>Email Address</label>
+          <div class="input-icon">
+            <i class="fas fa-envelope"></i>
+            <input type="email" name="email" class="form-control" placeholder="researcher@university.edu" required/>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <div class="input-icon">
+            <i class="fas fa-lock"></i>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required/>
+          </div>
+        </div>
+        <button type="submit" class="btn-auth">Sign In <i class="fas fa-arrow-right"></i></button>
+      </form>
+
+      <div class="demo-credentials">
+        <i class="fas fa-info-circle"></i>
+        <strong>Demo:</strong> demo@research.edu / demo123
+      </div>
+
+      <p class="auth-link">New researcher? <a href="/register">Create account</a></p>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>
